@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    container_name: roadfinder
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      - PHP_TIMEZONE=Europe/Istanbul
+    restart: unless-stopped

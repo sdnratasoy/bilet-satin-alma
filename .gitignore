@@ -1,0 +1,19 @@
+# Database
+src/database/*.db
+src/database/*.db-journal
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
