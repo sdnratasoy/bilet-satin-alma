@@ -176,55 +176,55 @@ require_once __DIR__ . '/../includes/header.php';
 
             <div class="bus-layout">
                 <div class="seats-container">
-                    <?php 
-                    $capacity = 40; 
-                    for ($row = 1; $row <= 10; $row++): 
+                    <?php
+                    $capacity = 40;
+                    $seats_per_row = 4;
+                    $total_rows = 10;
+
+                    for ($row = 1; $row <= $total_rows; $row++):
                     ?>
-                        <div class="seat-row">
-                            <div class="row-number"><?php echo $row; ?></div>
-                            
-                            <div class="seat-group">
-                                <?php 
+                        <div class="seat-column">
+                            <div class="column-number"><?php echo $row; ?></div>
+
+                            <div class="column-seats">
+                                <?php
                                 $seat1 = ($row - 1) * 4 + 1;
                                 $seat2 = ($row - 1) * 4 + 2;
+                                $seat3 = ($row - 1) * 4 + 3;
+                                $seat4 = ($row - 1) * 4 + 4;
+
                                 $is_booked1 = in_array($seat1, $booked_seats);
                                 $is_booked2 = in_array($seat2, $booked_seats);
-                                ?>
-                                <div class="seat <?php echo $is_booked1 ? 'booked male' : 'available'; ?>" 
-                                     data-seat="<?php echo $seat1; ?>"
-                                     onclick="openGenderModal(<?php echo $seat1; ?>, <?php echo $is_booked1 ? 'true' : 'false'; ?>)">
-                                    <?php echo $seat1; ?>
-                                </div>
-                                <div class="seat <?php echo $is_booked2 ? 'booked female' : 'available'; ?>" 
-                                     data-seat="<?php echo $seat2; ?>"
-                                     onclick="openGenderModal(<?php echo $seat2; ?>, <?php echo $is_booked2 ? 'true' : 'false'; ?>)">
-                                    <?php echo $seat2; ?>
-                                </div>
-                            </div>
-                            
-                            <div class="aisle"></div>
-                            
-                            <div class="seat-group single">
-                                <?php 
-                                $seat3 = ($row - 1) * 4 + 3;
                                 $is_booked3 = in_array($seat3, $booked_seats);
-                                ?>
-                                <div class="seat <?php echo $is_booked3 ? 'booked male' : 'available'; ?>" 
-                                     data-seat="<?php echo $seat3; ?>"
-                                     onclick="openGenderModal(<?php echo $seat3; ?>, <?php echo $is_booked3 ? 'true' : 'false'; ?>)">
-                                    <?php echo $seat3; ?>
-                                </div>
-                            </div>
-                            
-                            <div class="seat-group single">
-                                <?php 
-                                $seat4 = ($row - 1) * 4 + 4;
                                 $is_booked4 = in_array($seat4, $booked_seats);
                                 ?>
-                                <div class="seat <?php echo $is_booked4 ? 'booked female' : 'available'; ?>" 
-                                     data-seat="<?php echo $seat4; ?>"
-                                     onclick="openGenderModal(<?php echo $seat4; ?>, <?php echo $is_booked4 ? 'true' : 'false'; ?>)">
-                                    <?php echo $seat4; ?>
+
+                                <div class="seat-pair">
+                                    <div class="seat <?php echo $is_booked1 ? 'booked male' : 'available'; ?>"
+                                         data-seat="<?php echo $seat1; ?>"
+                                         onclick="openGenderModal(<?php echo $seat1; ?>, <?php echo $is_booked1 ? 'true' : 'false'; ?>)">
+                                        <?php echo $seat1; ?>
+                                    </div>
+                                    <div class="seat <?php echo $is_booked2 ? 'booked female' : 'available'; ?>"
+                                         data-seat="<?php echo $seat2; ?>"
+                                         onclick="openGenderModal(<?php echo $seat2; ?>, <?php echo $is_booked2 ? 'true' : 'false'; ?>)">
+                                        <?php echo $seat2; ?>
+                                    </div>
+                                </div>
+
+                                <div class="aisle-horizontal"></div>
+
+                                <div class="seat-pair">
+                                    <div class="seat <?php echo $is_booked3 ? 'booked male' : 'available'; ?>"
+                                         data-seat="<?php echo $seat3; ?>"
+                                         onclick="openGenderModal(<?php echo $seat3; ?>, <?php echo $is_booked3 ? 'true' : 'false'; ?>)">
+                                        <?php echo $seat3; ?>
+                                    </div>
+                                    <div class="seat <?php echo $is_booked4 ? 'booked female' : 'available'; ?>"
+                                         data-seat="<?php echo $seat4; ?>"
+                                         onclick="openGenderModal(<?php echo $seat4; ?>, <?php echo $is_booked4 ? 'true' : 'false'; ?>)">
+                                        <?php echo $seat4; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -448,50 +448,59 @@ require_once __DIR__ . '/../includes/header.php';
 .bus-layout {
     background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 3px solid #cbd5e1;
     position: relative;
-}
-
-.driver-seat {
-    display: none;
-}
-
-.steering-wheel {
-    display: none;
+    overflow-x: auto;
 }
 
 .seats-container {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    overflow-x: auto;
 }
 
-.seat-row {
+.seat-column {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
-.row-number {
+.column-number {
+    background: var(--accent-color);
+    color: white;
     width: 30px;
-    text-align: center;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
-    color: var(--text-light);
     font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
-.seat-group {
+.column-seats {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
 }
 
-.seat-group.single {
-    margin-left: 0.25rem;
+.seat-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
 }
 
-.aisle {
-    width: 40px;
+.aisle-horizontal {
+    height: 15px;
+    border-top: 2px dashed #cbd5e1;
+    margin: 0.25rem 0;
 }
 
 .seat {
@@ -636,7 +645,7 @@ require_once __DIR__ . '/../includes/header.php';
     cursor: not-allowed;
 }
 
-/* Modal */
+
 .modal {
     display: none;
     position: fixed;
@@ -736,6 +745,24 @@ require_once __DIR__ . '/../includes/header.php';
 }
 
 @media (max-width: 768px) {
+    .bus-layout {
+        padding: 1rem;
+    }
+
+    .seats-container {
+        padding: 0.5rem;
+    }
+
+    .seat-column {
+        gap: 0.35rem;
+    }
+
+    .column-number {
+        width: 25px;
+        height: 25px;
+        font-size: 0.75rem;
+    }
+
     .seat {
         width: 38px;
         height: 38px;

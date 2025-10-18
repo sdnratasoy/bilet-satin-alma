@@ -8,8 +8,9 @@ requireRole('user');
 $user = getCurrentUser($pdo);
 
 // Biletleri al
-$stmt = $pdo->prepare("SELECT t.*, tr.*, bc.name as company_name,
-                       tr.origin_city, tr.destination_city, tr.departure_time, tr.arrival_time, tr.price
+$stmt = $pdo->prepare("SELECT t.id as ticket_id, t.trip_id, t.seat_number, t.total_price, t.status, t.created_at,
+                       tr.origin_city, tr.destination_city, tr.departure_time, tr.arrival_time, tr.price,
+                       bc.name as company_name
                        FROM Tickets t
                        JOIN Trips tr ON t.trip_id = tr.id
                        JOIN Bus_Company bc ON tr.company_id = bc.id
@@ -46,7 +47,7 @@ require_once __DIR__ . '/../includes/header.php';
                 ?>
                 <div class="ticket-card <?php echo $is_cancelled ? 'cancelled' : ''; ?>">
                     <div class="ticket-header">
-                        <h3>Bilet #<?php echo $ticket['id']; ?></h3>
+                        <h3>Bilet #<?php echo $ticket['ticket_id']; ?></h3>
                         <span class="ticket-status <?php echo $ticket['status']; ?>">
                             <?php echo $is_cancelled ? '❌ İptal Edildi' : ($is_past ? '✅ Tamamlandı' : '🎫 Aktif'); ?>
                         </span>
@@ -83,13 +84,15 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     
                     <div class="ticket-actions">
-                        <a href="/user/download-ticket.php?id=<?php echo $ticket['id']; ?>" 
-                           class="btn btn-secondary" target="_blank">
-                            📄 PDF İndir
-                        </a>
-                        
+                        <form method="POST" action="/user/download-ticket.php" target="_blank" style="display: inline;">
+                            <input type="hidden" name="ticket_id" value="<?php echo $ticket['ticket_id']; ?>">
+                            <button type="submit" class="btn btn-secondary">
+                                📄 PDF İndir
+                            </button>
+                        </form>
+
                         <?php if (!$is_cancelled && !$is_past && $can_cancel): ?>
-                            <a href="/user/cancel-ticket.php?id=<?php echo $ticket['id']; ?>" 
+                            <a href="/user/cancel-ticket.php?id=<?php echo $ticket['ticket_id']; ?>"
                                class="btn btn-danger"
                                onclick="return confirm('Bu bileti iptal etmek istediğinizden emin misiniz? Bilet ücreti hesabınıza iade edilecektir.')">
                                 ❌ İptal Et
@@ -237,6 +240,24 @@ require_once __DIR__ . '/../includes/header.php';
 
 .btn-danger:hover {
     background: #dc2626;
+}
+
+.ticket-actions form button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ticket-actions form button:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
 }
 </style>
 
