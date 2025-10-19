@@ -32,7 +32,6 @@ body {
     padding: 0 20px;
 }
 
-/* Navbar */
 .navbar {
     background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     color: white;
@@ -197,6 +196,89 @@ body {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.date-input-wrapper input {
+    flex: 1;
+    padding-right: 3rem;
+    cursor: default;
+}
+
+.calendar-icon {
+    position: absolute;
+    right: 0.875rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+    padding: 0.25rem;
+    pointer-events: all;
+}
+
+.calendar-icon:hover {
+    transform: scale(1.1);
+}
+
+.calendar-icon:active {
+    transform: scale(0.95);
+}
+
+.flatpickr-calendar {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    font-family: inherit !important;
+}
+
+.flatpickr-calendar.calendar-below {
+    top: auto !important;
+    bottom: auto !important;
+}
+
+.flatpickr-calendar.arrowTop {
+    margin-top: 5px !important;
+}
+
+.flatpickr-calendar.arrowBottom {
+    margin-bottom: 0 !important;
+    margin-top: 5px !important;
+}
+
+.flatpickr-day.selected {
+    background: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.flatpickr-day.today {
+    border-color: var(--accent-color) !important;
+}
+
+.flatpickr-day:hover {
+    background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    background: var(--accent-color) !important;
+    color: white !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: var(--accent-color) !important;
+}
+
+.flatpickr-weekdays {
+    background: var(--bg-light) !important;
+}
+
+.flatpickr-input[readonly] {
+    cursor: text !important;
+    background: white !important;
 }
 
 .btn {

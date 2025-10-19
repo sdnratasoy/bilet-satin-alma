@@ -75,17 +75,6 @@ function formatMoney(amount) {
     }).format(amount);
 }
 
-function applyCoupon() {
-    const couponInput = document.getElementById('coupon_code');
-    const tripPrice = parseFloat(document.getElementById('trip_price').value);
-    
-    if (!couponInput || !couponInput.value) {
-        return;
-    }
-    
-   
-}
-
 function showLoading() {
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'loading-overlay';

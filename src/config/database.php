@@ -137,52 +137,104 @@ class Database {
         $this->pdo->exec("INSERT INTO User (full_name, email, password, role, balance) 
                          VALUES ('Test User', 'user@roadfinder.com', '$user_pass', 'user', 1000.0)");
 
-        $trips = [
-        [1, 'İstanbul', 'Ankara', '2025-10-20 09:00:00', '2025-10-20 14:00:00', 250.0, 40],
-        [1, 'İstanbul', 'Ankara', '2025-10-20 15:00:00', '2025-10-20 20:00:00', 250.0, 40],
-        [1, 'İstanbul', 'Ankara', '2025-10-21 08:00:00', '2025-10-21 13:00:00', 250.0, 40],
-        [1, 'İstanbul', 'Ankara', '2025-10-21 16:00:00', '2025-10-21 21:00:00', 250.0, 40],
-        
-        [1, 'Ankara', 'İstanbul', '2025-10-20 10:00:00', '2025-10-20 15:00:00', 250.0, 40],
-        [1, 'Ankara', 'İstanbul', '2025-10-20 17:00:00', '2025-10-20 22:00:00', 250.0, 40],
-        [1, 'Ankara', 'İstanbul', '2025-10-21 09:00:00', '2025-10-21 14:00:00', 250.0, 40],
-        
-        [2, 'İstanbul', 'İzmir', '2025-10-21 10:00:00', '2025-10-21 18:00:00', 300.0, 40],
-        [2, 'İstanbul', 'İzmir', '2025-10-21 20:00:00', '2025-10-22 04:00:00', 300.0, 40],
-        [2, 'İstanbul', 'İzmir', '2025-10-22 11:00:00', '2025-10-22 19:00:00', 300.0, 40],
-        
-        [2, 'İzmir', 'İstanbul', '2025-10-21 19:00:00', '2025-10-22 03:00:00', 300.0, 40],
-        [2, 'İzmir', 'İstanbul', '2025-10-22 12:00:00', '2025-10-22 20:00:00', 300.0, 40],
-        
-        [3, 'İstanbul', 'Antalya', '2025-10-22 08:00:00', '2025-10-22 20:00:00', 400.0, 40],
-        [3, 'İstanbul', 'Antalya', '2025-10-22 21:00:00', '2025-10-23 09:00:00', 400.0, 40],
-        [3, 'İstanbul', 'Antalya', '2025-10-23 10:00:00', '2025-10-23 22:00:00', 400.0, 40],
-        
-        [3, 'Antalya', 'İstanbul', '2025-10-22 09:00:00', '2025-10-22 21:00:00', 400.0, 40],
-        [3, 'Antalya', 'İstanbul', '2025-10-23 11:00:00', '2025-10-23 23:00:00', 400.0, 40],
-        
-        [4, 'Ankara', 'İzmir', '2025-10-23 11:00:00', '2025-10-23 19:00:00', 280.0, 40],
-        [4, 'Ankara', 'İzmir', '2025-10-23 20:00:00', '2025-10-24 04:00:00', 280.0, 40],
-        
-        [4, 'İzmir', 'Ankara', '2025-10-23 12:00:00', '2025-10-23 20:00:00', 280.0, 40],
-        
-        [2, 'İstanbul', 'Bursa', '2025-10-21 08:00:00', '2025-10-21 11:00:00', 150.0, 40],
-        [2, 'İstanbul', 'Bursa', '2025-10-21 14:00:00', '2025-10-21 17:00:00', 150.0, 40],
-        
-        [2, 'Bursa', 'İstanbul', '2025-10-21 09:00:00', '2025-10-21 12:00:00', 150.0, 40],
-        [2, 'Bursa', 'İstanbul', '2025-10-21 16:00:00', '2025-10-21 19:00:00', 150.0, 40]
+        $trips = [];
+        $routes = [
+            [1, 'İstanbul', 'Ankara', 5, 250],
+            [1, 'Ankara', 'İstanbul', 5, 250],
+            [2, 'İstanbul', 'İzmir', 8, 300],
+            [2, 'İzmir', 'İstanbul', 8, 300],
+            [3, 'İstanbul', 'Antalya', 12, 400],
+            [3, 'Antalya', 'İstanbul', 12, 400],
+            [1, 'İstanbul', 'Bursa', 3, 150],
+            [1, 'Bursa', 'İstanbul', 3, 150],
+            [2, 'Ankara', 'İzmir', 8, 280],
+            [2, 'İzmir', 'Ankara', 8, 280],
+            [3, 'Ankara', 'Antalya', 10, 350],
+            [3, 'Antalya', 'Ankara', 10, 350],
+            [4, 'İzmir', 'Antalya', 7, 320],
+            [4, 'Antalya', 'İzmir', 7, 320],
+            [1, 'İstanbul', 'Adana', 14, 450],
+            [1, 'Adana', 'İstanbul', 14, 450],
+            [2, 'İstanbul', 'Gaziantep', 16, 500],
+            [2, 'Gaziantep', 'İstanbul', 16, 500],
+            [3, 'İstanbul', 'Konya', 10, 350],
+            [3, 'Konya', 'İstanbul', 10, 350],
+            [4, 'İstanbul', 'Samsun', 12, 380],
+            [4, 'Samsun', 'İstanbul', 12, 380],
+            [1, 'Ankara', 'Konya', 4, 200],
+            [1, 'Konya', 'Ankara', 4, 200],
+            [2, 'Ankara', 'Adana', 9, 320],
+            [2, 'Adana', 'Ankara', 9, 320],
+            [3, 'İzmir', 'Bursa', 6, 220],
+            [3, 'Bursa', 'İzmir', 6, 220],
+            [4, 'Bursa', 'Ankara', 6, 230],
+            [4, 'Ankara', 'Bursa', 6, 230],
+            [1, 'İstanbul', 'Kayseri', 11, 370],
+            [1, 'Kayseri', 'İstanbul', 11, 370],
+            [2, 'Ankara', 'Samsun', 7, 270],
+            [2, 'Samsun', 'Ankara', 7, 270],
+            [3, 'İzmir', 'Adana', 13, 420],
+            [3, 'Adana', 'İzmir', 13, 420],
+            [4, 'Antalya', 'Konya', 5, 250],
+            [4, 'Konya', 'Antalya', 5, 250],
         ];
 
-        foreach ($trips as $trip) {
-            $this->pdo->exec("INSERT INTO Trips (company_id, origin_city, destination_city, departure_time, arrival_time, price, capacity) 
-                             VALUES ({$trip[0]}, '{$trip[1]}', '{$trip[2]}', '{$trip[3]}', '{$trip[4]}', {$trip[5]}, {$trip[6]})");
+        for ($day = 0; $day < 7; $day++) {
+            $date = date('Y-m-d', strtotime("+$day days"));
+
+            foreach ($routes as $route) {
+                list($company, $origin, $dest, $duration, $price) = $route;
+
+                $dept1 = "$date 08:00:00";
+                $arrv1 = date('Y-m-d H:i:s', strtotime($dept1) + ($duration * 3600));
+                $trips[] = [$company, $origin, $dest, $dept1, $arrv1, $price, 40];
+
+                $dept2 = "$date 14:00:00";
+                $arrv2 = date('Y-m-d H:i:s', strtotime($dept2) + ($duration * 3600));
+                $trips[] = [$company, $origin, $dest, $dept2, $arrv2, $price, 40];
+
+                $dept3 = "$date 21:00:00";
+                $arrv3 = date('Y-m-d H:i:s', strtotime($dept3) + ($duration * 3600));
+                $trips[] = [$company, $origin, $dest, $dept3, $arrv3, $price, 40];
+            }
         }
 
-        $this->pdo->exec("INSERT INTO Coupons (code, discount, company_id, usage_limit, expire_date) 
-                         VALUES ('ROADFINDER10', 10.0, NULL, 100, '2025-12-31 23:59:59')");
+        foreach ($trips as $trip) {
+            try {
+                $this->pdo->exec("INSERT INTO Trips (company_id, origin_city, destination_city, departure_time, arrival_time, price, capacity)
+                                 VALUES ({$trip[0]}, '{$trip[1]}', '{$trip[2]}', '{$trip[3]}', '{$trip[4]}', {$trip[5]}, {$trip[6]})");
+            } catch (Exception $e) {
+                error_log("Trip insert error: " . $e->getMessage());
+            }
+        }
 
-        $this->pdo->exec("INSERT INTO Coupons (code, discount, company_id, usage_limit, expire_date) 
-                         VALUES ('METRO20', 20.0, 1, 50, '2025-11-30 23:59:59')");
+        $coupons = [
+            ['ROADFINDER10', 10.0, NULL, 1000, '2025-12-31 23:59:59'],
+            ['ROADFINDER15', 15.0, NULL, 500, '2025-12-31 23:59:59'],
+            ['YENIYIL25', 25.0, NULL, 100, '2026-01-15 23:59:59'],
+            ['SONBAHAR20', 20.0, NULL, 200, '2025-11-30 23:59:59'],
+
+            ['METRO20', 20.0, 1, 300, '2025-12-31 23:59:59'],
+            ['METRO30', 30.0, 1, 100, '2025-11-30 23:59:59'],
+            ['PAMUKKALE15', 15.0, 2, 250, '2025-12-31 23:59:59'],
+            ['PAMUKKALE25', 25.0, 2, 150, '2025-11-15 23:59:59'],
+            ['KAMIL20', 20.0, 3, 200, '2025-12-31 23:59:59'],
+            ['NILUFER15', 15.0, 4, 300, '2025-12-31 23:59:59'],
+
+            ['ERKENREZERVASYON', 12.0, NULL, 500, '2025-12-31 23:59:59'],
+            ['OGRENCI10', 10.0, NULL, 1000, '2025-12-31 23:59:59'],
+            ['KARAPAZMARTESI', 50.0, NULL, 50, '2025-11-29 23:59:59'],
+        ];
+
+        foreach ($coupons as $coupon) {
+            try {
+                $company_id_value = $coupon[2] === NULL ? 'NULL' : $coupon[2];
+                $this->pdo->exec("INSERT INTO Coupons (code, discount, company_id, usage_limit, expire_date)
+                                 VALUES ('{$coupon[0]}', {$coupon[1]}, $company_id_value, {$coupon[3]}, '{$coupon[4]}')");
+            } catch (Exception $e) {
+                error_log("Coupon insert error: " . $e->getMessage());
+            }
+        }
     }
 }
 

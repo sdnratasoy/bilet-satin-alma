@@ -7,7 +7,6 @@ requireRole('user');
 
 $user = getCurrentUser($pdo);
 
-// POST ile bilet ID'sini al
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ticket_id = intval($_POST['ticket_id'] ?? 0);
 } else {
@@ -18,12 +17,10 @@ if ($ticket_id <= 0) {
     die("Geçersiz bilet. Bilet ID bulunamadı.");
 }
 
-// Debug için kontrol
 if (!$user || !isset($user['id'])) {
     die("Kullanıcı bilgisi alınamadı. Lütfen tekrar giriş yapın.");
 }
 
-// Bilet bilgilerini al ve kullanıcının kendi bileti olduğunu kontrol et
 $stmt = $pdo->prepare("SELECT t.id as ticket_id, t.seat_number, t.total_price, t.status, t.created_at,
                        tr.origin_city, tr.destination_city, tr.departure_time, tr.arrival_time,
                        bc.name as company_name
@@ -38,7 +35,6 @@ if (!$ticket) {
     die("Bilet bulunamadı. Lütfen biletlerinizi kontrol edin.");
 }
 
-// PDF içeriği
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
@@ -78,7 +74,28 @@ header('Content-Type: text/html; charset=utf-8');
             padding-bottom: 25px;
             margin-bottom: 25px;
         }
-        
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo-container img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .logo-container .brand-text {
+            color: #0f172a;
+            font-size: 2.2rem;
+            font-weight: bold;
+        }
+
         .header h1 {
             color: #3b82f6;
             font-size: 2.5rem;
@@ -194,7 +211,10 @@ header('Content-Type: text/html; charset=utf-8');
         
         <div class="ticket">
             <div class="header">
-                <h1>🚌 RoadFinder</h1>
+                <div class="logo-container">
+                    <img src="/assets/img/bus-icon.png" alt="RoadFinder">
+                    <span class="brand-text">RoadFinder</span>
+                </div>
                 <h2>Otobüs Bileti</h2>
                 <div class="ticket-id">Bilet No: #<?php echo $ticket['ticket_id']; ?></div>
             </div>

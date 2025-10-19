@@ -37,8 +37,8 @@ $current_user = getCurrentUser($pdo);
                     <?php endif; ?>
                     
                     <li class="user-info">
-                        <span>👤 <?php echo clean($current_user['full_name']); ?></span>
-                        <?php if (hasRole('user')): ?>
+                        <span>👤 <?php echo $current_user ? clean($current_user['full_name']) : ''; ?></span>
+                        <?php if (hasRole('user') && $current_user): ?>
                             <span class="balance">💳 <?php echo formatMoney($current_user['balance']); ?></span>
                         <?php endif; ?>
                     </li>

@@ -83,9 +83,12 @@ require_once __DIR__ . '/includes/header.php';
                 
                 <div class="form-group">
                     <label for="date">Tarih</label>
-                    <input type="date" name="date" id="date" 
-                           value="<?php echo isset($_GET['date']) ? clean($_GET['date']) : date('Y-m-d'); ?>"
-                           min="<?php echo date('Y-m-d'); ?>" required>
+                    <div class="date-input-wrapper">
+                        <input type="text" name="date" id="date"
+                               value="<?php echo isset($_GET['date']) ? clean($_GET['date']) : date('Y-m-d'); ?>"
+                               required placeholder="GG.AA.YYYY">
+                        <span class="calendar-icon">📅</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -148,7 +151,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <a href="/auth/login.php" class="btn btn-primary">Bilet Almak İçin Giriş Yapın</a>
                             <?php endif; ?>
                             
-                            <a href="/trip-details.php?id=<?php echo $trip['id']; ?>" 
+                            <a href="/trip-details.php?id=<?php echo $trip['id']; ?>&origin=<?php echo urlencode($origin); ?>&destination=<?php echo urlencode($destination); ?>&date=<?php echo urlencode($date); ?>"
                                class="btn btn-secondary">Detaylar</a>
                         </div>
                     </div>
@@ -183,5 +186,39 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    flatpickr("#date", {
+        locale: "tr",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d.m.Y",
+        minDate: "today",
+        defaultDate: "<?php echo isset($_GET['date']) ? clean($_GET['date']) : date('Y-m-d'); ?>",
+        inline: false,
+        allowInput: true,
+        clickOpens: true,
+        disableMobile: true,
+        position: "below",
+        positionElement: undefined,
+        onReady: function(selectedDates, dateStr, instance) {
+            const calendarIcon = document.querySelector('.calendar-icon');
+            calendarIcon.addEventListener('click', function() {
+                instance.open();
+            });
+
+            instance.calendarContainer.classList.add('calendar-below');
+        }
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

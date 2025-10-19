@@ -6,6 +6,11 @@ require_once __DIR__ . '/../includes/functions.php';
 requireRole('user');
 
 $user = getCurrentUser($pdo);
+if (!$user) {
+    setError("Kullanıcı bilgisi alınamadı. Lütfen tekrar giriş yapın.");
+    header("Location: /auth/login.php");
+    exit;
+}
 
 // Biletleri al
 $stmt = $pdo->prepare("SELECT t.id as ticket_id, t.trip_id, t.seat_number, t.total_price, t.status, t.created_at,

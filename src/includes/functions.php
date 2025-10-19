@@ -26,6 +26,9 @@ function requireRole($role) {
 }
 
 function clean($data) {
+    if ($data === null || $data === false) {
+        return '';
+    }
     return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
 }
 
@@ -61,10 +64,13 @@ function getCurrentUser($pdo) {
     if (!isLoggedIn()) {
         return null;
     }
-    
+
     $stmt = $pdo->prepare("SELECT * FROM User WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch();
+    $user = $stmt->fetch();
+
+    // Eğer kullanıcı bulunamazsa false yerine null dön
+    return $user ? $user : null;
 }
 
 function getCities() {
@@ -95,28 +101,33 @@ function formatMoney($amount) {
 }
 
 function validateCoupon($pdo, $code, $company_id = null) {
-    $query = "SELECT * FROM Coupons WHERE code = ? AND expire_date > datetime('now')";
+    $query = "SELECT * FROM Coupons WHERE code = ?";
     $params = [$code];
-    
+
     if ($company_id) {
         $query .= " AND (company_id = ? OR company_id IS NULL)";
         $params[] = $company_id;
     } else {
         $query .= " AND company_id IS NULL";
     }
-    
+
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
     $coupon = $stmt->fetch();
-    
+
     if (!$coupon) {
         return ['valid' => false, 'message' => 'Geçersiz kupon kodu'];
     }
-    
+
+    // Check expiration date
+    if (strtotime($coupon['expire_date']) < time()) {
+        return ['valid' => false, 'message' => 'Kupon süresi dolmuş'];
+    }
+
     if ($coupon['usage_limit'] && $coupon['used_count'] >= $coupon['usage_limit']) {
         return ['valid' => false, 'message' => 'Kupon kullanım limiti doldu'];
     }
-    
+
     return ['valid' => true, 'discount' => $coupon['discount'], 'coupon_id' => $coupon['id']];
 }
 

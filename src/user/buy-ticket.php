@@ -148,7 +148,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <form method="POST" action="" id="ticket-form">
+    <form method="POST" action="" id="ticket-form" onsubmit="return handleSubmit(event)">
         <input type="hidden" name="seat_number" id="selected_seat" value="">
         <input type="hidden" name="gender" id="selected_gender" value="">
         
@@ -236,9 +236,13 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="purchase-section">
             <div class="coupon-input">
                 <label>🎟️ İndirim Kuponu (Opsiyonel)</label>
-                <input type="text" name="coupon_code" placeholder="Kupon kodunuz varsa girin">
+                <div class="coupon-input-group">
+                    <input type="text" name="coupon_code" id="coupon_code" placeholder="Kupon kodunuz varsa girin">
+                    <button type="button" class="btn-apply-coupon" onclick="applyCoupon()">Uygula</button>
+                </div>
+                <div id="coupon-message" class="coupon-message"></div>
             </div>
-            
+
             <div class="summary-card">
                 <h4>Bilet Özeti</h4>
                 <div class="summary-item">
@@ -251,9 +255,17 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="summary-item">
                     <span>Bilet Fiyatı:</span>
-                    <strong><?php echo formatMoney($trip['price']); ?></strong>
+                    <strong id="original-price"><?php echo formatMoney($trip['price']); ?></strong>
+                </div>
+                <div class="summary-item discount-row" id="discount-row" style="display: none;">
+                    <span>İndirim (<span id="discount-percent">0</span>%):</span>
+                    <strong class="discount-amount" id="discount-amount">0,00 ₺</strong>
                 </div>
                 <div class="summary-item total">
+                    <span>Toplam Ücret:</span>
+                    <strong class="final-price" id="final-price"><?php echo formatMoney($trip['price']); ?></strong>
+                </div>
+                <div class="summary-item">
                     <span>Bakiyeniz:</span>
                     <strong><?php echo formatMoney($user['balance'] ?? 0); ?></strong>
                 </div>
@@ -583,12 +595,54 @@ require_once __DIR__ . '/../includes/header.php';
     color: var(--text-dark);
 }
 
-.coupon-input input {
-    width: 100%;
+.coupon-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.coupon-input-group input {
+    flex: 1;
     padding: 0.875rem;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
+}
+
+.btn-apply-coupon {
+    padding: 0.875rem 1.5rem;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-apply-coupon:hover {
+    background: var(--secondary-color);
+}
+
+.coupon-message {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+}
+
+.coupon-message.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #059669;
+}
+
+.coupon-message.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #dc2626;
 }
 
 .summary-card {
@@ -619,6 +673,21 @@ require_once __DIR__ . '/../includes/header.php';
 
 .summary-item strong {
     color: var(--accent-color);
+}
+
+.discount-row {
+    color: #059669;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 0.75rem;
+}
+
+.discount-amount {
+    color: #059669 !important;
+}
+
+.final-price {
+    color: var(--accent-color) !important;
+    font-size: 1.3rem !important;
 }
 
 .btn-purchase {
@@ -776,6 +845,10 @@ require_once __DIR__ . '/../includes/header.php';
 </style>
 
 <script>
+const originalPrice = <?php echo $trip['price']; ?>;
+const companyId = <?php echo $trip['company_id']; ?>;
+const tripId = <?php echo $trip_id; ?>;
+let appliedDiscount = 0;
 let selectedSeat = null;
 let selectedGender = null;
 let currentModalSeat = null;
@@ -835,6 +908,124 @@ window.onclick = function(event) {
     if (event.target == modal) {
         closeGenderModal();
     }
+}
+
+window.applyCoupon = function() {
+    const couponCode = document.getElementById('coupon_code').value.trim();
+    const messageDiv = document.getElementById('coupon-message');
+    const applyBtn = document.querySelector('.btn-apply-coupon');
+
+    console.log('applyCoupon called with code:', couponCode);
+    console.log('Company ID:', companyId);
+
+    if (!couponCode) {
+        messageDiv.className = 'coupon-message error';
+        messageDiv.textContent = 'Lütfen bir kupon kodu girin.';
+        messageDiv.style.display = 'block';
+        return;
+    }
+
+    applyBtn.disabled = true;
+    applyBtn.textContent = 'Kontrol ediliyor...';
+    messageDiv.style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('coupon_code', couponCode);
+    formData.append('company_id', companyId);
+    formData.append('trip_id', tripId);
+
+    console.log('Sending request to validate-coupon.php');
+
+    fetch('validate-coupon.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Uygula';
+
+        if (data.valid) {
+            messageDiv.className = 'coupon-message success';
+            messageDiv.textContent = `✅ Kupon uygulandı! %${data.discount} indirim kazandınız.`;
+            messageDiv.style.display = 'block';
+
+            appliedDiscount = parseFloat(data.discount);
+            console.log('Applied discount:', appliedDiscount);
+            updatePriceSummary();
+        } else {
+            messageDiv.className = 'coupon-message error';
+            messageDiv.textContent = `❌ ${data.message}`;
+            messageDiv.style.display = 'block';
+
+            appliedDiscount = 0;
+            updatePriceSummary();
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Uygula';
+        messageDiv.className = 'coupon-message error';
+        messageDiv.textContent = 'Kupon kontrolü yapılırken bir hata oluştu: ' + error.message;
+        messageDiv.style.display = 'block';
+    });
+}
+
+window.updatePriceSummary = function() {
+    const discountRow = document.getElementById('discount-row');
+    const discountPercent = document.getElementById('discount-percent');
+    const discountAmount = document.getElementById('discount-amount');
+    const finalPrice = document.getElementById('final-price');
+
+    console.log('Updating price summary with discount:', appliedDiscount);
+
+    if (appliedDiscount > 0) {
+        const discount = originalPrice * (appliedDiscount / 100);
+        const finalAmount = originalPrice - discount;
+
+        console.log('Original price:', originalPrice);
+        console.log('Discount amount:', discount);
+        console.log('Final amount:', finalAmount);
+
+        discountRow.style.display = 'flex';
+        discountPercent.textContent = appliedDiscount;
+        discountAmount.textContent = '-' + formatMoney(discount);
+        finalPrice.textContent = formatMoney(finalAmount);
+    } else {
+        discountRow.style.display = 'none';
+        finalPrice.textContent = formatMoney(originalPrice);
+    }
+}
+
+window.formatMoney = function(amount) {
+    return new Intl.NumberFormat('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount) + ' ₺';
+}
+
+window.handleSubmit = function(event) {
+    const seatNumber = document.getElementById('selected_seat').value;
+    const gender = document.getElementById('selected_gender').value;
+
+    console.log('Form submit - Seat:', seatNumber, 'Gender:', gender);
+
+    if (!seatNumber || !gender) {
+        alert('Lütfen koltuk ve cinsiyet seçin!');
+        event.preventDefault();
+        return false;
+    }
+
+    console.log('Form submitting...');
+    return true;
 }
 </script>
 

@@ -7,12 +7,10 @@ requireRole('firma_admin');
 
 $company_id = $_SESSION['company_id'];
 
-// Firma bilgilerini al
 $stmt = $pdo->prepare("SELECT * FROM Bus_Company WHERE id = ?");
 $stmt->execute([$company_id]);
 $company = $stmt->fetch();
 
-// İstatistikler
 $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM Trips WHERE company_id = ?");
 $stmt->execute([$company_id]);
 $trip_count = $stmt->fetch()['count'];
@@ -29,7 +27,6 @@ $stmt = $pdo->prepare("SELECT SUM(t.total_price) as total FROM Tickets t
 $stmt->execute([$company_id]);
 $revenue = $stmt->fetch()['total'] ?? 0;
 
-// Seferler
 $stmt = $pdo->prepare("SELECT * FROM Trips WHERE company_id = ? ORDER BY departure_time DESC LIMIT 5");
 $stmt->execute([$company_id]);
 $recent_trips = $stmt->fetchAll();
