@@ -32,13 +32,14 @@ $current_user = getCurrentUser($pdo);
                         <li><a href="/admin/dashboard.php">Admin Panel</a></li>
                     <?php elseif (hasRole('firma_admin')): ?>
                         <li><a href="/firma-admin/dashboard.php">Firma Panel</a></li>
+                        <li><a href="/firma-admin/profile.php">Profilim</a></li>
                     <?php else: ?>
                         <li><a href="/user/tickets.php">Biletlerim</a></li>
                     <?php endif; ?>
-                    
+
                     <li class="user-info">
                         <span>👤 <?php echo $current_user ? clean($current_user['full_name']) : ''; ?></span>
-                        <?php if (hasRole('user') && $current_user): ?>
+                        <?php if ((hasRole('user') || hasRole('firma_admin')) && $current_user): ?>
                             <span class="balance">💳 <?php echo formatMoney($current_user['balance']); ?></span>
                         <?php endif; ?>
                     </li>

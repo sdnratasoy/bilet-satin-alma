@@ -15,11 +15,17 @@ $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM Trips WHERE company_id = ?"
 $stmt->execute([$company_id]);
 $trip_count = $stmt->fetch()['count'];
 
-$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM Tickets t 
-                       JOIN Trips tr ON t.trip_id = tr.id 
+$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM Tickets t
+                       JOIN Trips tr ON t.trip_id = tr.id
                        WHERE tr.company_id = ? AND t.status = 'active'");
 $stmt->execute([$company_id]);
-$ticket_count = $stmt->fetch()['count'];
+$active_ticket_count = $stmt->fetch()['count'];
+
+$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM Tickets t
+                       JOIN Trips tr ON t.trip_id = tr.id
+                       WHERE tr.company_id = ?");
+$stmt->execute([$company_id]);
+$total_ticket_count = $stmt->fetch()['count'];
 
 $stmt = $pdo->prepare("SELECT SUM(t.total_price) as total FROM Tickets t 
                        JOIN Trips tr ON t.trip_id = tr.id 
@@ -36,9 +42,15 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="admin-panel">
-    <h1>Firma Admin Panel</h1>
-    <h2><?php echo clean($company['name']); ?></h2>
-    
+    <div class="panel-header">
+        <div>
+            <h1>Firma Admin Panel</h1>
+            <h2 style="color: var(--text-light); font-size: 1.2rem; margin-top: 0.5rem;">
+                <?php echo clean($company['name']); ?>
+            </h2>
+        </div>
+    </div>
+
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon">🚍</div>
@@ -51,8 +63,16 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="stat-card">
             <div class="stat-icon">🎫</div>
             <div class="stat-info">
-                <h3><?php echo $ticket_count; ?></h3>
-                <p>Satılan Bilet</p>
+                <h3><?php echo $active_ticket_count; ?></h3>
+                <p>Aktif Bilet</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+                <h3><?php echo $total_ticket_count; ?></h3>
+                <p>Toplam Bilet</p>
             </div>
         </div>
         
@@ -73,11 +93,23 @@ require_once __DIR__ . '/../includes/header.php';
                 <h3>Sefer Yönetimi</h3>
                 <p>Seferleri yönetin</p>
             </a>
-            
+
+            <a href="/firma-admin/tickets.php" class="menu-card">
+                <div class="menu-icon">🎫</div>
+                <h3>Bilet Yönetimi</h3>
+                <p>Biletleri görüntüleyin ve iptal edin</p>
+            </a>
+
             <a href="/firma-admin/coupons.php" class="menu-card">
                 <div class="menu-icon">🎟️</div>
                 <h3>Kupon Yönetimi</h3>
                 <p>İndirim kuponları</p>
+            </a>
+
+            <a href="/firma-admin/profile.php" class="menu-card">
+                <div class="menu-icon">👤</div>
+                <h3>Profilim</h3>
+                <p>Profil bilgileri ve kişisel biletler</p>
             </a>
         </div>
     </div>
@@ -113,12 +145,149 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <style>
+.admin-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card.highlight {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+}
+
+.stat-icon {
+    font-size: 3rem;
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.stat-info p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.stat-card.highlight .stat-info p {
+    color: rgba(255,255,255,0.9);
+}
+
+.admin-menu {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.admin-menu h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.menu-card {
+    background: var(--bg-light);
+    padding: 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.menu-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.menu-card h3 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.menu-card p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
 .recent-trips {
     background: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-top: 2rem;
+}
+
+.recent-trips h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: var(--bg-light);
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background: var(--bg-light);
 }
 </style>
 

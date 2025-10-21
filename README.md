@@ -23,19 +23,6 @@ bash
 docker-compose up -d
 Tarayıcıda açın:
 http://localhost:8080
-🔑 Varsayılan Kullanıcılar
-Admin:
-
-Email: admin@roadfinder.com
-Şifre: admin123
-Firma Admin:
-
-Email: firma@roadfinder.com
-Şifre: firma123
-Kullanıcı:
-
-Email: user@roadfinder.com
-Şifre: user123
 
 🛠️ Teknolojiler
 PHP 8.2

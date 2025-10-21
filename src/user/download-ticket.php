@@ -35,13 +35,20 @@ if (!$ticket) {
     die("Bilet bulunamadı. Lütfen biletlerinizi kontrol edin.");
 }
 
+$stmt = $pdo->prepare("SELECT COUNT(*) as ticket_number
+                       FROM Tickets
+                       WHERE user_id = ? AND created_at <= ?");
+$stmt->execute([$user['id'], $ticket['created_at']]);
+$ticket_number_result = $stmt->fetch();
+$user_ticket_number = $ticket_number_result['ticket_number'];
+
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Bilet #<?php echo $ticket['ticket_id']; ?></title>
+    <title>Bilet #<?php echo $user_ticket_number; ?></title>
     <style>
         * {
             margin: 0;
@@ -216,7 +223,7 @@ header('Content-Type: text/html; charset=utf-8');
                     <span class="brand-text">RoadFinder</span>
                 </div>
                 <h2>Otobüs Bileti</h2>
-                <div class="ticket-id">Bilet No: #<?php echo $ticket['ticket_id']; ?></div>
+                <div class="ticket-id">Bilet No: #<?php echo $user_ticket_number; ?></div>
             </div>
             
             <div class="info-row">

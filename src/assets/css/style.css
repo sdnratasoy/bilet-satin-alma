@@ -480,6 +480,17 @@ body {
     text-align: center;
     margin-bottom: 0.5rem;
     font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.auth-box h1 .bus-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
 .auth-box h2 {

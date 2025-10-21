@@ -138,64 +138,84 @@ class Database {
                          VALUES ('Test User', 'user@roadfinder.com', '$user_pass', 'user', 1000.0)");
 
         $trips = [];
-        $routes = [
-            [1, 'İstanbul', 'Ankara', 5, 250],
-            [1, 'Ankara', 'İstanbul', 5, 250],
-            [2, 'İstanbul', 'İzmir', 8, 300],
-            [2, 'İzmir', 'İstanbul', 8, 300],
-            [3, 'İstanbul', 'Antalya', 12, 400],
-            [3, 'Antalya', 'İstanbul', 12, 400],
-            [1, 'İstanbul', 'Bursa', 3, 150],
-            [1, 'Bursa', 'İstanbul', 3, 150],
-            [2, 'Ankara', 'İzmir', 8, 280],
-            [2, 'İzmir', 'Ankara', 8, 280],
-            [3, 'Ankara', 'Antalya', 10, 350],
-            [3, 'Antalya', 'Ankara', 10, 350],
-            [4, 'İzmir', 'Antalya', 7, 320],
-            [4, 'Antalya', 'İzmir', 7, 320],
-            [1, 'İstanbul', 'Adana', 14, 450],
-            [1, 'Adana', 'İstanbul', 14, 450],
-            [2, 'İstanbul', 'Gaziantep', 16, 500],
-            [2, 'Gaziantep', 'İstanbul', 16, 500],
-            [3, 'İstanbul', 'Konya', 10, 350],
-            [3, 'Konya', 'İstanbul', 10, 350],
-            [4, 'İstanbul', 'Samsun', 12, 380],
-            [4, 'Samsun', 'İstanbul', 12, 380],
-            [1, 'Ankara', 'Konya', 4, 200],
-            [1, 'Konya', 'Ankara', 4, 200],
-            [2, 'Ankara', 'Adana', 9, 320],
-            [2, 'Adana', 'Ankara', 9, 320],
-            [3, 'İzmir', 'Bursa', 6, 220],
-            [3, 'Bursa', 'İzmir', 6, 220],
-            [4, 'Bursa', 'Ankara', 6, 230],
-            [4, 'Ankara', 'Bursa', 6, 230],
-            [1, 'İstanbul', 'Kayseri', 11, 370],
-            [1, 'Kayseri', 'İstanbul', 11, 370],
-            [2, 'Ankara', 'Samsun', 7, 270],
-            [2, 'Samsun', 'Ankara', 7, 270],
-            [3, 'İzmir', 'Adana', 13, 420],
-            [3, 'Adana', 'İzmir', 13, 420],
-            [4, 'Antalya', 'Konya', 5, 250],
-            [4, 'Konya', 'Antalya', 5, 250],
+
+        // Her güzergah için farklı firmalar sefer yapacak
+        // Format: [origin, destination, duration_hours, base_price]
+        $base_routes = [
+            ['İstanbul', 'Ankara', 5, 250],
+            ['Ankara', 'İstanbul', 5, 250],
+            ['İstanbul', 'İzmir', 8, 300],
+            ['İzmir', 'İstanbul', 8, 300],
+            ['İstanbul', 'Antalya', 12, 400],
+            ['Antalya', 'İstanbul', 12, 400],
+            ['İstanbul', 'Bursa', 3, 150],
+            ['Bursa', 'İstanbul', 3, 150],
+            ['İstanbul', 'Adana', 14, 450],
+            ['Adana', 'İstanbul', 14, 450],
+            ['İstanbul', 'Gaziantep', 16, 500],
+            ['Gaziantep', 'İstanbul', 16, 500],
+            ['İstanbul', 'Konya', 10, 350],
+            ['Konya', 'İstanbul', 10, 350],
+            ['İstanbul', 'Samsun', 12, 380],
+            ['Samsun', 'İstanbul', 12, 380],
+            ['İstanbul', 'Kayseri', 11, 370],
+            ['Kayseri', 'İstanbul', 11, 370],
+            ['Ankara', 'İzmir', 8, 280],
+            ['İzmir', 'Ankara', 8, 280],
+            ['Ankara', 'Antalya', 10, 350],
+            ['Antalya', 'Ankara', 10, 350],
+            ['Ankara', 'Konya', 4, 200],
+            ['Konya', 'Ankara', 4, 200],
+            ['Ankara', 'Adana', 9, 320],
+            ['Adana', 'Ankara', 9, 320],
+            ['Ankara', 'Samsun', 7, 270],
+            ['Samsun', 'Ankara', 7, 270],
+            ['Ankara', 'Bursa', 6, 230],
+            ['Bursa', 'Ankara', 6, 230],
+            ['İzmir', 'Antalya', 7, 320],
+            ['Antalya', 'İzmir', 7, 320],
+            ['İzmir', 'Bursa', 6, 220],
+            ['Bursa', 'İzmir', 6, 220],
+            ['İzmir', 'Adana', 13, 420],
+            ['Adana', 'İzmir', 13, 420],
+            ['Antalya', 'Konya', 5, 250],
+            ['Konya', 'Antalya', 5, 250],
+            ['Bursa', 'Antalya', 9, 340],
+            ['Antalya', 'Bursa', 9, 340],
         ];
 
-        for ($day = 0; $day < 7; $day++) {
+        // 10 gün için seferler oluştur
+        for ($day = 0; $day < 10; $day++) {
             $date = date('Y-m-d', strtotime("+$day days"));
 
-            foreach ($routes as $route) {
-                list($company, $origin, $dest, $duration, $price) = $route;
+            foreach ($base_routes as $route) {
+                list($origin, $dest, $duration, $base_price) = $route;
 
-                $dept1 = "$date 08:00:00";
-                $arrv1 = date('Y-m-d H:i:s', strtotime($dept1) + ($duration * 3600));
-                $trips[] = [$company, $origin, $dest, $dept1, $arrv1, $price, 40];
+                // Her güzergah için tüm firmalar sefer yapacak
+                foreach ([1, 2, 3, 4] as $company_id) {
+                    // Her firma için farklı saatlerde seferler
+                    $times = [];
+                    if ($company_id == 1) { // Metro Turizm
+                        $times = ['07:00:00', '13:00:00', '20:00:00'];
+                    } elseif ($company_id == 2) { // Pamukkale
+                        $times = ['08:30:00', '15:00:00', '22:00:00'];
+                    } elseif ($company_id == 3) { // Kamil Koç
+                        $times = ['09:00:00', '16:30:00', '23:00:00'];
+                    } else { // Nilüfer
+                        $times = ['06:30:00', '14:00:00', '21:30:00'];
+                    }
 
-                $dept2 = "$date 14:00:00";
-                $arrv2 = date('Y-m-d H:i:s', strtotime($dept2) + ($duration * 3600));
-                $trips[] = [$company, $origin, $dest, $dept2, $arrv2, $price, 40];
+                    foreach ($times as $time) {
+                        $dept = "$date $time";
+                        $arrv = date('Y-m-d H:i:s', strtotime($dept) + ($duration * 3600));
 
-                $dept3 = "$date 21:00:00";
-                $arrv3 = date('Y-m-d H:i:s', strtotime($dept3) + ($duration * 3600));
-                $trips[] = [$company, $origin, $dest, $dept3, $arrv3, $price, 40];
+                        // Her firmaya özel fiyat varyasyonu (±%10)
+                        $price_variation = rand(-10, 10);
+                        $final_price = $base_price + ($base_price * $price_variation / 100);
+
+                        $trips[] = [$company_id, $origin, $dest, $dept, $arrv, $final_price, 40];
+                    }
+                }
             }
         }
 

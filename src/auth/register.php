@@ -49,7 +49,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="auth-container">
     <div class="auth-box">
-        <h1>🛣️ RoadFinder</h1>
+        <h1><img src="/assets/img/bus-icon.png" alt="Bus" class="bus-icon"> RoadFinder</h1>
         <h2>Kayıt Ol</h2>
         
         <form method="POST" action="" class="auth-form">

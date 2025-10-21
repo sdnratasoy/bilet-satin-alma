@@ -44,15 +44,16 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     <?php else: ?>
         <div class="tickets-list">
-            <?php foreach ($tickets as $ticket): ?>
-                <?php
+            <?php
+            $ticket_number = count($tickets); // En yeni biletten başlayıp geriye doğru sayacağız
+            foreach ($tickets as $ticket):
                 $is_past = strtotime($ticket['departure_time']) < time();
                 $can_cancel = getHoursDifference($ticket['departure_time'], date('Y-m-d H:i:s')) > 1;
                 $is_cancelled = $ticket['status'] === 'cancelled';
-                ?>
+            ?>
                 <div class="ticket-card <?php echo $is_cancelled ? 'cancelled' : ''; ?>">
                     <div class="ticket-header">
-                        <h3>Bilet #<?php echo $ticket['ticket_id']; ?></h3>
+                        <h3>Bilet #<?php echo $ticket_number; ?></h3>
                         <span class="ticket-status <?php echo $ticket['status']; ?>">
                             <?php echo $is_cancelled ? '❌ İptal Edildi' : ($is_past ? '✅ Tamamlandı' : '🎫 Aktif'); ?>
                         </span>
@@ -109,7 +110,9 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php endif; ?>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php
+                $ticket_number--; // Her bilet sonrası numarayı azalt
+            endforeach; ?>
         </div>
     <?php endif; ?>
 </div>
