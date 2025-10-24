@@ -536,11 +536,212 @@ require_once __DIR__ . '/../includes/header.php';
 }
 
 /* Modal Styles */
-.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);backdrop-filter:blur(4px);animation:fadeIn 0.3s ease}.modal.show{display:flex;justify-content:center;align-items:center}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}.modal-content{background:white;border-radius:12px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideIn 0.3s ease}.modal-header{padding:2rem 2rem 1rem 2rem;text-align:center}.modal-icon{font-size:4rem;display:block;margin-bottom:1rem}.modal-header h2{margin:0;color:var(--text-dark);font-size:1.5rem}.modal-body{padding:1rem 2rem 2rem 2rem;text-align:center}.modal-body p{margin:0.5rem 0;color:var(--text-dark)}.item-name-display{font-weight:bold;font-size:1.2rem;color:var(--primary-color);margin:1rem 0!important}.warning-text{color:#ef4444;font-weight:500;margin-top:1.5rem!important;padding:1rem;background:#fee2e2;border-radius:8px;border-left:4px solid #ef4444}.modal-footer{padding:1rem 2rem 2rem 2rem;display:flex;gap:1rem;justify-content:center}.modal-footer .btn{padding:0.75rem 2rem;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s}.modal-footer .btn-secondary{background:var(--bg-light);color:var(--text-dark);border:1px solid var(--border-color)}.modal-footer .btn-secondary:hover{background:var(--border-color)}.modal-footer .btn-danger{background:#ef4444;color:white}.modal-footer .btn-danger:hover{background:#dc2626}.delete-btn{background:#ef4444;color:white;border:none;cursor:pointer}.delete-btn:hover{background:#dc2626}
+#deleteModal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+#deleteModal.show {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#deleteModal .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    margin: auto !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+}
+
+#deleteModal .modal-header {
+    padding: 2rem 2rem 1rem 2rem;
+    text-align: center;
+}
+
+#deleteModal .modal-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+#deleteModal .modal-header h2 {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1.5rem;
+}
+
+#deleteModal .modal-body {
+    padding: 1rem 2rem 2rem 2rem;
+    text-align: center;
+}
+
+#deleteModal .modal-body p {
+    margin: 0.5rem 0;
+    color: var(--text-dark);
+}
+
+#deleteModal .item-name-display {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin: 1rem 0 !important;
+}
+
+#deleteModal .warning-text {
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 1.5rem !important;
+    padding: 1rem;
+    background: #fee2e2;
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+}
+
+#deleteModal .modal-footer {
+    padding: 1rem 2rem 2rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+#deleteModal .modal-footer .btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#deleteModal .modal-footer .btn-secondary {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+#deleteModal .modal-footer .btn-secondary:hover {
+    background: var(--border-color);
+}
+
+#deleteModal .modal-footer .btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+#deleteModal .modal-footer .btn-danger:hover {
+    background: #dc2626;
+}
+
+.delete-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 5px;
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+}
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded',function(){const modal=document.getElementById('deleteModal');const deleteButtons=document.querySelectorAll('.delete-btn');const cancelBtn=modal.querySelector('.cancel-btn');const confirmBtn=modal.querySelector('.confirm-delete-btn');const itemNameDisplay=modal.querySelector('.item-name-display');let deleteId=null;deleteButtons.forEach(button=>{button.addEventListener('click',function(){deleteId=this.getAttribute('data-id');const itemName=this.getAttribute('data-name');itemNameDisplay.textContent=itemName;modal.classList.add('show')})});cancelBtn.addEventListener('click',function(){modal.classList.remove('show');deleteId=null});modal.addEventListener('click',function(e){if(e.target===modal){modal.classList.remove('show');deleteId=null}});confirmBtn.addEventListener('click',function(){if(deleteId){window.location.href='?delete='+deleteId}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('show')){modal.classList.remove('show');deleteId=null}})});
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('deleteModal');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const cancelBtn = modal.querySelector('.cancel-btn');
+    const confirmBtn = modal.querySelector('.confirm-delete-btn');
+    const itemNameDisplay = modal.querySelector('.item-name-display');
+    let deleteId = null;
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            deleteId = this.getAttribute('data-id');
+            const itemName = this.getAttribute('data-name');
+            itemNameDisplay.textContent = itemName;
+
+            // Modal'ı göster ve inline style ile zorla ortala
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.position = 'fixed';
+            modal.style.left = '0';
+            modal.style.top = '0';
+            modal.style.right = '0';
+            modal.style.bottom = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '10000';
+        });
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        deleteId = null;
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            deleteId = null;
+        }
+    });
+
+    confirmBtn.addEventListener('click', function() {
+        if (deleteId) {
+            window.location.href = '?delete=' + deleteId;
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            deleteId = null;
+        }
+    });
+});
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

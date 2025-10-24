@@ -51,11 +51,11 @@ function setError($message) {
 
 function showMessage() {
     if (isset($_SESSION['success'])) {
-        echo '<div class="alert alert-success">' . clean($_SESSION['success']) . '</div>';
+        echo '<div class="toast-message" data-type="success" data-message="' . clean($_SESSION['success']) . '"></div>';
         unset($_SESSION['success']);
     }
     if (isset($_SESSION['error'])) {
-        echo '<div class="alert alert-error">' . clean($_SESSION['error']) . '</div>';
+        echo '<div class="toast-message" data-type="error" data-message="' . clean($_SESSION['error']) . '"></div>';
         unset($_SESSION['error']);
     }
 }

@@ -98,11 +98,11 @@ require_once __DIR__ . '/../includes/header.php';
                         </form>
 
                         <?php if (!$is_cancelled && !$is_past && $can_cancel): ?>
-                            <a href="/user/cancel-ticket.php?id=<?php echo $ticket['ticket_id']; ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Bu bileti iptal etmek istediğinizden emin misiniz? Bilet ücreti hesabınıza iade edilecektir.')">
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    onclick="window.showCancelModal(<?php echo $ticket['ticket_id']; ?>, '<?php echo addslashes(formatMoney($ticket['total_price'])); ?>')">
                                 ❌ İptal Et
-                            </a>
+                            </button>
                         <?php elseif (!$is_cancelled && !$is_past && !$can_cancel): ?>
                             <button class="btn btn-disabled" disabled>
                                 ⏱️ İptal Süresi Geçti

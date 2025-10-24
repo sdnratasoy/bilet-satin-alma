@@ -92,7 +92,8 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Sefer Ara</button>
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary btn-block">Sefer Ara</button>
                 </div>
             </div>
         </form>
