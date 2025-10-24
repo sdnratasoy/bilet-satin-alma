@@ -21,11 +21,6 @@ Otobüs bileti satış platformu – **PHP & SQLite** ile geliştirilmiştir.
 - 🔑 Şifre: `firma123`
 
 
- 🧩 Gereksinimler
-- Docker
-- Docker Compose
-
-
 🚀 Çalıştırma
 
 Projeyi klonlayın:
